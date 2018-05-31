@@ -1,0 +1,8 @@
+{
+  "description": "New",
+  "weight": 100,
+  "containers": [
+    { "customer_id": "8888", "user_id": "taras", "origin": "Lviv, Ukraine" }
+  ],
+  "vessel_id": "vessel002"
+}
