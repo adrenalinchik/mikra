@@ -3,6 +3,7 @@ package main
 import (
 	// Import the generated protobuf code
 	pb "github.com/adrenalinchik/mikra/consignment-service/proto/consignment"
+	vesselProto "github.com/adrenalinchik/mikra/vessel-service/proto/vessel"
 	"golang.org/x/net/context"
 	"fmt"
 	"log"
@@ -37,7 +38,7 @@ func (repo *ConsignmentRepository) GetAll()([]*pb.Consignment){
 // to give you a better idea.
 type service struct {
 	repo Repository
-	//vesselClient vesselProto.VesselServiceClient
+	vesselClient vesselProto.VesselServiceClient
 }
 
 // CreateConsignment - we created just one method on our service,
@@ -47,22 +48,22 @@ func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 	// Here we call a client instance of our vessel service with our consignment weight,
 	// and the amount of containers as the capacity value
 
-	log.Println("In CreateConsignment method")
+	log.Printf("Creating consigment %s", req.Description)
 
-	//log.Printf("From Sevice vesselClient: %s \n", s.vesselClient)
-	//
-	//vesselResponse, err := s.vesselClient.FindAvailable(context.Background(), &vesselProto.Specification{
-	//	MaxWeight: req.Weight,
-	//	Capacity: int32(len(req.Containers)),
-	//})
-	//log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//// We set the VesselId as the vessel we got back from our
-	//// vessel service
-	//req.VesselId = vesselResponse.Vessel.Id
+	log.Printf("From Consigment Sevice vesselClient: %s \n", s.vesselClient)
+
+	vesselResponse, err := s.vesselClient.FindAvailable(context.Background(), &vesselProto.Specification{
+		MaxWeight: req.Weight,
+		Capacity: int32(len(req.Containers)),
+	})
+	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
+	if err != nil {
+		return err
+	}
+
+	// We set the VesselId as the vessel we got back from our
+	// vessel service
+	req.VesselId = vesselResponse.Vessel.Id
 	// Save our consignment
 	consignment, err := s.repo.Create(req)
 	if err != nil {
@@ -93,13 +94,12 @@ func main() {
 		micro.Name("go.micro.srv.consignment"),
 		micro.Version("latest"),
 	)
-	//vesselClient := vesselProto.NewVesselServiceClient("vessel", srv.Client())
+	vesselClient := vesselProto.NewVesselServiceClient("vessel", srv.Client())
 	// Init will parse the command line flags.
 	srv.Init()
 
 	// Register handler
-	//pb.RegisterShippingServiceHandler(srv.Server(), &service{repo, vesselClient})
-	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo})
+	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo, vesselClient})
 
 	// Run the server
 	if err := srv.Run(); err != nil {
