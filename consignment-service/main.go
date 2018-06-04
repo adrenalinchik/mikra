@@ -52,10 +52,15 @@ func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, re
 
 	log.Printf("From Consigment Sevice vesselClient: %s \n", s.vesselClient)
 
-	vesselResponse, err := s.vesselClient.FindAvailable(context.Background(), &vesselProto.Specification{
-		MaxWeight: req.Weight,
-		Capacity: int32(len(req.Containers)),
+	vesselResponse, err := s.vesselClient.Create(context.Background(), &vesselProto.Vessel{
+		MaxWeight: 200000000,
+		Capacity: 1000,
 	})
+
+	//vesselResponse, err := s.vesselClient.FindAvailable(context.Background(), &vesselProto.Specification{
+	//	MaxWeight: req.Weight,
+	//	Capacity: int32(len(req.Containers)),
+	//})
 	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
 	if err != nil {
 		return err
