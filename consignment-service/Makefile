@@ -1,6 +1,5 @@
 build:
 #		protoc --go_out=plugins=micro:. /media/taras/work/GolangProjectsLinux/go/src/github.com/adrenalinchik/mikra/consignment-service/proto/consignment
-
 		docker build -t consignment-service .
 
 run:

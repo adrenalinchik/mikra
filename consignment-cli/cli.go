@@ -10,6 +10,7 @@ import (
 	"github.com/micro/go-micro/cmd"
 	microclient "github.com/micro/go-micro/client"
 	"golang.org/x/net/context"
+	"fmt"
 )
 
 const (
@@ -44,7 +45,12 @@ func main() {
 		log.Fatalf("Could not parse file: %v", err)
 	}
 
+	fmt.Println("Before CreateConsignment in Cli")
+
 	r, err := client.CreateConsignment(context.TODO(), consignment)
+
+	fmt.Println("After CreateConsignment in Cli")
+
 	if err != nil {
 		log.Fatalf("Could not create: %v", err)
 	}
