@@ -2,15 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 
 	pb "github.com/adrenalinchik/mikra/consignment-service/proto/consignment"
-	"github.com/micro/go-micro/cmd"
 	microclient "github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/cmd"
 	"golang.org/x/net/context"
-	"fmt"
 )
 
 const (
@@ -28,6 +28,7 @@ func parseFile(file string) (*pb.Consignment, error) {
 }
 
 func main() {
+
 	cmd.Init()
 
 	// Create new greeter client
@@ -45,12 +46,14 @@ func main() {
 		log.Fatalf("Could not parse file: %v", err)
 	}
 
+	fmt.Printf("Consignment to be created: %v", consignment)
+
 	fmt.Println("Before CreateConsignment in Cli")
 
-	r, err := client.CreateConsignment(context.TODO(), consignment)
+	r, err := client.CreateConsignment(context.Background(), consignment)
 
 	fmt.Println("After CreateConsignment in Cli")
-
+	
 	if err != nil {
 		log.Fatalf("Could not create: %v", err)
 	}
